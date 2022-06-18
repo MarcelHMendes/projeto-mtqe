@@ -1,19 +1,17 @@
+#!/usr/bin/python3
+
 from collections import defaultdict
 import itertools
 import random
 import sys
 
 
-prefixes_available = ['A', 'B', 'C', 'D']
+number_of_choices = [1,2,3,4]
 
 def generate_data_client(num_experiments, num_rounds, num_prefixes):
     experiment = list()
     for exp in range(num_experiments):
-        rounds = list()
-        for ro in range(num_rounds):
-            prefixes = random.choices(prefixes_available, k=num_prefixes)
-            rounds.append(list(set(prefixes)))
-        experiment.append(rounds)
+        experiment.append(random.choice(number_of_choices))
     return experiment
 
 def clients(num_clients, num_exp, num_rounds, num_pfx):
@@ -22,18 +20,21 @@ def clients(num_clients, num_exp, num_rounds, num_pfx):
     for cli in range(num_clients):
         clients[f'client {str(cli)}'] = generate_data_client(num_exp,num_rounds,num_pfx)
 
+    print(clients)
+
     return clients
 
 # criar um arquivo separado para os schedulers
-def priority(clients):  #lower idx clients has priority
+def priority(clients):  #lower-index clients have higher priority
     experiments = list()
+    prefixes_available  = ['A', 'B', 'C', 'D']
     prefixes_in_use = list()
     for idx in clients:
         if clients[idx]:
-            flatten_exp_pfx = list(itertools.chain(*clients[idx][0]))
-            if not any(item in flatten_exp_pfx for item in prefixes_in_use):
+            flatten_exp_num = int(clients[idx][0])
+            if len(prefixes_available) >= flatten_exp_num:
+                prefixes_in_use.extend(random.choices(prefixes_available, k=flatten_exp_num))
                 experiments.append(clients[idx].pop(0))
-                prefixes_in_use.extend(flatten_exp_pfx)
     print(experiments)
     return experiments
 
@@ -44,8 +45,12 @@ def run(clients, num_r):
     print(time)
 
 def main():
-    num_rounds = 1
-    clients_list = clients(3, 1, num_rounds, 1)
+    num_rounds = 3
+    num_experiments = 1
+    num_clients = 5
+    num_prefixes = 2
+
+    clients_list = clients(num_clients, num_experiments, num_rounds, num_prefixes)
     run(clients_list, num_rounds)
 
 if __name__ == '__main__':
