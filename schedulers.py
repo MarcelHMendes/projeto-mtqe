@@ -68,7 +68,7 @@ def maximum_throughput(ops, num_clients):
         if len(experiments) > len(maximum):
             maximum = copy.deepcopy(experiments)
     ops.remove_itens(maximum)
-    print(maximum)
+    #print(maximum)
     return maximum
 
 def _add_one(array_bit):
